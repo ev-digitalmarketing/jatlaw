@@ -1,17 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-html { scroll-behavior: smooth; }
-body { @apply font-body bg-cream text-navy; }
-h1, h2, h3, h4 { @apply font-heading; }
-.preserve-3d { transform-style: preserve-3d; }
-@keyframes float { 0%,100% { transform: translateZ(var(--z)) translateY(0); } 50% { transform: translateZ(var(--z)) translateY(-12px); } }
-.float { animation: float 5s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) { .float { animation: none; } html { scroll-behavior: auto; } }
-.reveal { opacity: 0; transform: perspective(900px) rotateX(16deg) translateY(50px); transform-origin: 50% 100%; transition: opacity .8s ease, transform 1s cubic-bezier(.2,.8,.2,1); }
-.reveal.in { opacity: 1; transform: none; }
-.word { display: inline-block; opacity: 0; transform-origin: 50% 100%; animation: rise .9s cubic-bezier(.2,.8,.2,1) forwards; }
-@keyframes rise { from { opacity: 0; transform: perspective(600px) rotateX(-80deg) translateY(30px); } to { opacity: 1; transform: none; } }
-@keyframes marquee { to { transform: translateX(-50%); } }
-.marquee { display: flex; width: max-content; animation: marquee 35s linear infinite; }
-@media (prefers-reduced-motion: reduce) { .reveal, .word { opacity: 1; transform: none; animation: none; transition: none; } .marquee { animation: none; } }
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { overflow-x: clip; }
+  body { @apply bg-ivory font-body text-navy antialiased; }
+  h1, h2, h3, h4 { @apply font-heading; }
+}
+@layer components {
+  .slab { --cut: clamp(24px, 4vw, 56px); position: relative; clip-path: polygon(0 var(--cut), 100% 0, 100% 100%, 0 100%); margin-top: calc(var(--cut) * -1); padding-top: calc(var(--cut) + 1.5rem); }
+  .slab:first-child { clip-path: none; margin-top: 0; padding-top: 1.5rem; }
+  .btn { @apply inline-flex items-center gap-2 rounded-full px-6 py-3 font-heading text-sm font-bold shadow-3d; }
+  .nav { @apply relative after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-gold after:transition-all hover:after:w-full; }
+  .field { @apply w-full rounded-md border border-white/20 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/50 focus:border-gold focus:bg-white/10; }
+  .eyebrow { @apply font-heading text-xs font-bold uppercase tracking-[0.3em] text-gold; }
+}
+
+/* Statue lane: on wide screens the content leaves a free lane on the statue's side */
+:root { --lane: 0px; --h: 150px; --off: 0px; }
+@media (min-width: 1280px) {
+  :root { --lane: 300px; --h: min(60vh, 480px); --off: calc(min(576px, 50vw - 40px) - var(--lane) / 2); }
+  main > .slab:nth-child(odd) .lane { padding-right: var(--lane); }
+  main > .slab:nth-child(even) .lane { padding-left: var(--lane); }
+}
